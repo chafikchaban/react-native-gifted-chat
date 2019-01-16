@@ -1,34 +1,39 @@
-/* eslint no-use-before-define: ["error", { "variables": false }] */
-
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ViewPropTypes } from 'react-native';
-import Color from './Color';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewPropTypes,
+} from 'react-native';
 
 export default class Actions extends React.Component {
-
   constructor(props) {
     super(props);
     this.onActionsPress = this.onActionsPress.bind(this);
   }
 
   onActionsPress() {
-    const { options } = this.props;
-    const optionKeys = Object.keys(options);
-    const cancelButtonIndex = optionKeys.indexOf('Cancel');
-    this.context.actionSheet().showActionSheetWithOptions(
-      {
-        options: optionKeys,
-        cancelButtonIndex,
-        tintColor: this.props.optionTintColor,
-      },
-      (buttonIndex) => {
-        const key = optionKeys[buttonIndex];
-        if (key) {
-          options[key](this.props);
+    const options = Object.keys(this.props.options);
+    const cancelButtonIndex = Object.keys(this.props.options).length - 1;
+    this.context.actionSheet().showActionSheetWithOptions({
+      options,
+      cancelButtonIndex,
+      tintColor: this.props.optionTintColor
+    },
+    (buttonIndex) => {
+      let i = 0;
+      for (let key in this.props.options) {
+        if (this.props.options.hasOwnProperty(key)) {
+          if (buttonIndex === i) {
+            this.props.options[key](this.props);
+            return;
+          }
+          i++;
         }
-      },
-    );
+      }
+    });
   }
 
   renderIcon() {
@@ -36,8 +41,14 @@ export default class Actions extends React.Component {
       return this.props.icon();
     }
     return (
-      <View style={[styles.wrapper, this.props.wrapperStyle]}>
-        <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
+      <View
+        style={[styles.wrapper, this.props.wrapperStyle]}
+      >
+        <Text
+          style={[styles.iconText, this.props.iconTextStyle]}
+        >
+          +
+        </Text>
       </View>
     );
   }
@@ -52,7 +63,6 @@ export default class Actions extends React.Component {
       </TouchableOpacity>
     );
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -64,15 +74,15 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     borderRadius: 13,
-    borderColor: Color.defaultColor,
+    borderColor: '#b2b2b2',
     borderWidth: 2,
     flex: 1,
   },
   iconText: {
-    color: Color.defaultColor,
+    color: '#b2b2b2',
     fontWeight: 'bold',
     fontSize: 16,
-    backgroundColor: Color.backgroundTransparent,
+    backgroundColor: 'transparent',
     textAlign: 'center',
   },
 });
@@ -82,13 +92,12 @@ Actions.contextTypes = {
 };
 
 Actions.defaultProps = {
-  onSend: () => { },
+  onSend: () => {},
   options: {},
-  optionTintColor: Color.optionTintColor,
+  optionTintColor: '#007AFF',
   icon: null,
   containerStyle: {},
   iconTextStyle: {},
-  wrapperStyle: {},
 };
 
 Actions.propTypes = {
@@ -97,7 +106,6 @@ Actions.propTypes = {
   optionTintColor: PropTypes.string,
   icon: PropTypes.func,
   onPressActionButton: PropTypes.func,
-  wrapperStyle: ViewPropTypes.style,
   containerStyle: ViewPropTypes.style,
   iconTextStyle: Text.propTypes.style,
 };

@@ -43,6 +43,7 @@ MessageVideo.defaultProps = {
     height: 100,
     borderRadius: 13,
     margin: 3,
+    resizeMode: 'cover',
   },
   videoProps: {},
 };
